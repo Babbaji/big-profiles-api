@@ -1,0 +1,98 @@
+<div class="row justify-content-end my-5">
+
+  <div class="col-md-3 row justify-content-center my-3">
+
+    <button class="col-md-7 my-2" mat-raised-button color="primary" (click)="patchDate('1')">Ultima settimana</button>
+    <button class="col-md-7 my-2" mat-raised-button color="primary" (click)="patchDate('2')">Ultimo mese</button>
+    <button class="col-md-7 my-2" mat-raised-button color="primary" (click)="patchDate('3')">Ultimo trimestre</button>
+  </div>
+  <div class="col-md-3 text-center mt-3">
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="pickerFrom" placeholder="From date & time" [(ngModel)]="startDate"
+             [max]="maxDate">
+
+      <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+
+      <ngx-mat-datetime-picker #pickerFrom></ngx-mat-datetime-picker>
+    </mat-form-field>
+
+  </div>
+  <div class="col-md-3 text-center mt-3">
+    <mat-form-field>
+      <input matInput [ngxMatDatetimePicker]="pickerTo" placeholder="To date & time" [(ngModel)]="endDate"
+             [min]="startDate" [max]="maxDate">
+
+      <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+
+      <ngx-mat-datetime-picker #pickerTo></ngx-mat-datetime-picker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-3 text-center mt-3">
+
+    <button mat-raised-button color="primary" (click)="onSearchButton()">Cerca</button>
+  </div>
+</div>
+<div *ngIf="retrieve">
+
+  <mat-divider></mat-divider>
+
+  <div class="row justify-content-around my-5 mx-5"
+       *ngIf="retrieve?.values && retrieve?.values?.length > 0; else valuesBlock">
+
+    <div class="col-md-3 text-center rounded border border-2 p-4 mx-3 mt-3">
+        <div class="row">
+          <div class="col-8">Chiamate Totali:</div>
+          <div class="col-4">{{calculatedValues?.total_requests || "N/A"}}</div>
+        </div>
+    </div>
+    <div class="col-md-3 text-center rounded border border-2 p-4 mx-3 mt-3">
+        <div class="row">
+          <div class="col-8">Errori Totali:</div>
+          <div class="col-4">{{calculatedValues?.total_errors || "N/A"}}</div>
+        </div>
+    </div>
+    <div class="col-md-3 text-center rounded border border-2 p-4 mx-3 mt-3">
+        <div class="row">
+          <div class="col-8">Tempo Risposta medio:</div>
+          <div class="col-4">{{calculatedValues?.total_response_time_ms || "N/A"}}</div>
+        </div>
+      </div>
+  </div>
+  <ng-template #valuesBlock>
+    <div class="row text-center">
+      <h2>Non sono presenti Record per questo range di date.</h2>
+    </div>
+  </ng-template>
+</div>
+<div class="row justify-content-around my-5 mx-5" *ngIf="retrieve">
+  <mat-divider></mat-divider>
+
+
+  <div class="col-md-4 text-center mt-3" *ngIf="lineChart && lineChart.length > 0">
+    <h1>Chiamate nel tempo</h1>
+    <app-line-chart [chartInput]="lineChart"></app-line-chart>
+  </div>
+  <div class="col-md-4 text-center mt-3" *ngIf="lineChart && lineChart.length > 0">
+    <h1>Percentuale Errori</h1>
+    <app-pie-chart [chartInput]="pieChart"></app-pie-chart>
+  </div>
+  <div class="col-md-4 text-center mt-3" *ngIf="lineChart && lineChart.length > 0">
+    <h1>Distribuzione Valori</h1>
+    <app-bar-chart [chartInput]="barChart"></app-bar-chart>
+  </div>
+</div>
+
+<div class="container my-5" *ngIf="retrieve">
+  <mat-divider></mat-divider>
+
+  <div class="row mat-background-primary text-center mt-3" *ngIf="retrieve?.logs?.length > 0">
+    <h2>Logs</h2>
+  </div>
+  <mat-list role="list">
+    <mat-list-item role="listitem" *ngFor="let log of retrieve?.logs"> {{log.payload}} </mat-list-item>
+  </mat-list>
+  <div class="row justify-content-end" *ngIf="retrieve?.logs?.length > 0">
+    <button mat-raised-button color="primary" (click)="onNextPage()">Carica più logs...</button>
+  </div>
+</div>
+
